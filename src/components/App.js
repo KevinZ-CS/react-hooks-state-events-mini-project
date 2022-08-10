@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import CategoryFilter from "./CategoryFilter";
 import NewTaskForm from "./NewTaskForm";
 import TaskList from "./TaskList";
@@ -8,12 +8,31 @@ console.log("Here's the data you're working with");
 console.log({ CATEGORIES, TASKS });
 
 function App() {
+  const [tasks, setTasks] = useState(TASKS) ;
+  const [category, setCategory] = useState('All');
+
+function handleAddTask(newTask) {
+  setTasks([...tasks, newTask]);
+}
+
+function handleDeleteTask(deletedTask) {
+  setTasks(tasks.filter((task) => task.text !== deletedTask));
+  //If the task on the current list matches the task that's being deleted then return false. 
+  //Or another way to see it is if the current task doesn't equal to deleted task return true.
+}
+
+const visibleTasks = tasks.filter(
+  (task) => category === 'All' || task.category === category
+
+  //if the current task category is on all or its own category include it in the array.
+);
+
   return (
     <div className="App">
       <h2>My tasks</h2>
-      <CategoryFilter />
-      <NewTaskForm />
-      <TaskList />
+      <CategoryFilter categories={CATEGORIES} selectedCategory={category} onSelectCategory={setCategory} />
+      <NewTaskForm categories={CATEGORIES.filter((cat) => cat !== 'All')} onTaskFormSubmit={handleAddTask} />
+      <TaskList onDeleteTask={handleDeleteTask} tasks={visibleTasks} />
     </div>
   );
 }
